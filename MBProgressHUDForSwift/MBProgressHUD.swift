@@ -44,61 +44,6 @@ func MB_MULTILINE_TEXTSIZE(text: String?, font: UIFont, maxSize: CGSize, mode: N
 }
 
 class MBProgressHUD: UIView {
-    
-    // MARK: - Class methods
-    class func showHUDAddedTo(view: UIView, animated: Bool) -> MBProgressHUD {
-        var hud:MBProgressHUD = MBProgressHUD(view: view)
-        hud.removeFromSuperViewOnHide = true
-        view.addSubview(hud)
-        hud.show(animated)
-        
-        return hud
-    }
-    
-    class func hideHUDForView(view: UIView, animated: Bool) -> Bool {
-        var hud: MBProgressHUD? = self.HUDForView(view)
-        if hud != nil {
-            hud!.removeFromSuperViewOnHide = true
-            hud!.hide(animated)
-            
-            return true
-        }
-        
-        return false
-    }
-    
-    class func hideAllHUDsForView(view: UIView, animated: Bool) -> Int {
-        let huds = MBProgressHUD.allHUDsForView(view)
-        for hud in huds {
-            hud.removeFromSuperViewOnHide = true
-            hud.hide(animated)
-        }
-        
-        return huds.count
-    }
-    
-    class func HUDForView(view: UIView) -> MBProgressHUD? {
-        for subview in view.subviews.reverse() {
-            if subview is MBProgressHUD {
-                return subview as? MBProgressHUD
-            }
-        }
-        
-        return nil
-    }
-    
-    class func allHUDsForView(view: UIView) -> [MBProgressHUD] {
-        var huds: [MBProgressHUD] = []
-        for aView in view.subviews {
-            if aView is MBProgressHUD {
-                huds.append(aView as! MBProgressHUD)
-            }
-        }
-        
-        return huds
-    }
-    
-    // MARK: -
     var useAnimation: Bool?
     var methodForExecution: Selector?
     var targetForExecution: AnyObject?
@@ -631,10 +576,65 @@ class MBProgressHUD: UIView {
         
         UIGraphicsPopContext()
     }
-    
-
 }
 
+    // MARK: - Class methods
+extension MBProgressHUD {
+    
+    class func showHUDAddedTo(view: UIView, animated: Bool) -> MBProgressHUD {
+        let hud: MBProgressHUD = MBProgressHUD(view: view)
+        hud.removeFromSuperViewOnHide = true
+        view.addSubview(hud)
+        hud.show(animated)
+        
+        return hud
+    }
+    
+    class func hideHUDForView(view: UIView, animated: Bool) -> Bool {
+        var hud: MBProgressHUD? = self.HUDForView(view)
+        if hud != nil {
+            hud!.removeFromSuperViewOnHide = true
+            hud!.hide(animated)
+            
+            return true
+        }
+        
+        return false
+    }
+    
+    class func hideAllHUDsForView(view: UIView, animated: Bool) -> Int {
+        let huds = MBProgressHUD.allHUDsForView(view)
+        for hud in huds {
+            hud.removeFromSuperViewOnHide = true
+            hud.hide(animated)
+        }
+        
+        return huds.count
+    }
+    
+    class func HUDForView(view: UIView) -> MBProgressHUD? {
+        for subview in view.subviews.reverse() {
+            if subview is MBProgressHUD {
+                return subview as? MBProgressHUD
+            }
+        }
+        
+        return nil
+    }
+    
+    class func allHUDsForView(view: UIView) -> [MBProgressHUD] {
+        var huds: [MBProgressHUD] = []
+        for aView in view.subviews {
+            if aView is MBProgressHUD {
+                huds.append(aView as! MBProgressHUD)
+            }
+        }
+        
+        return huds
+    }
+}
+
+// MARK: - MBRoundProgressView
 class MBRoundProgressView: UIView {
     var progress: Float = 0.0 {
         didSet {
@@ -728,6 +728,8 @@ class MBRoundProgressView: UIView {
     }
 }
 
+
+// MARK: - MBBarProgressView
 class MBBarProgressView: UIView {
     var progress: Float = 0.0 {
         didSet {
