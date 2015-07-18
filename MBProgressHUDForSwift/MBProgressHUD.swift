@@ -50,7 +50,7 @@ class MBProgressHUD: UIView {
     var objectForExecution: AnyObject?
     var label: UILabel?
     var detailsLabel: UILabel?
-    var isFinished: Bool?
+//    var isFinished: Bool?
     var rotationTransform: CGAffineTransform = CGAffineTransformIdentity
     
     var indicator: UIView?
@@ -296,7 +296,7 @@ class MBProgressHUD: UIView {
     private func done() {
         NSObject.cancelPreviousPerformRequestsWithTarget(self)
         
-        isFinished = true
+//        isFinished = true
         self.alpha = 0.0
         if removeFromSuperViewOnHide {
             self.removeFromSuperview()

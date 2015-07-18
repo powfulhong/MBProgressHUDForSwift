@@ -68,7 +68,7 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         self.navigationController!.view.addSubview(HUD!)
         
         // Set determinate mode
-        HUD!.mode = MBProgressHUDMode.MBProgressHUDModeDeterminate
+        HUD!.mode = MBProgressHUDMode.Determinate
         
         HUD!.delegate = self
         HUD!.labelText = "Loading"
@@ -81,7 +81,7 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         HUD = MBProgressHUD(view: self.navigationController!.view)
         self.navigationController!.view.addSubview(HUD!)
         
-        HUD!.mode = MBProgressHUDMode.MBProgressHUDModeAnnularDeterminate
+        HUD!.mode = MBProgressHUDMode.AnnularDeterminate
         
         HUD!.delegate = self
         HUD!.labelText = "Loading"
@@ -95,7 +95,7 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         self.navigationController!.view.addSubview(HUD!)
         
         // Set determinate bar mode
-        HUD!.mode = .MBProgressHUDModeDeterminateHorizontalBar;
+        HUD!.mode = .DeterminateHorizontalBar;
         
         HUD!.delegate = self;
         
@@ -112,7 +112,7 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         HUD!.customView = UIImageView(image: UIImage(named: "37x-Checkmark.png"))
         
         // Set custom view mode
-        HUD!.mode = .MBProgressHUDModeCustomView;
+        HUD!.mode = .CustomView;
         
         HUD!.delegate = self;
         HUD!.labelText = "Completed";
@@ -180,7 +180,7 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         let hud: MBProgressHUD = MBProgressHUD.showHUDAddedTo(self.navigationController!.view, animated: true)
         
         // Configure for text only and offset down
-        hud.mode = .MBProgressHUDModeText
+        hud.mode = .Text
         hud.labelText = "Some message..."
         hud.margin = 10.0
         hud.removeFromSuperViewOnHide = true
@@ -219,7 +219,7 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         // Indeterminate mode
         sleep(2)
         // Switch to determinate mode
-        HUD!.mode = .MBProgressHUDModeDeterminate
+        HUD!.mode = .Determinate
         HUD!.labelText = "Progress"
         var progress: Float = 0.0
         while progress < 1.0 {
@@ -228,7 +228,7 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
             usleep(50000)
         }
         // Back to indeterminate mode
-        HUD!.mode = .MBProgressHUDModeIndeterminate
+        HUD!.mode = .Indeterminate
         HUD!.labelText = "Cleaning up"
         sleep(2)
         // UIImageView is a UIKit class, we have to initialize it on the main thread
@@ -238,7 +238,7 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
             imageView = UIImageView(image: image)
         }
         HUD!.customView = imageView
-        HUD!.mode = .MBProgressHUDModeCustomView
+        HUD!.mode = .CustomView
         HUD!.labelText = "Completed"
         sleep(2)
     }
@@ -247,7 +247,7 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
     func connection(connection: NSURLConnection, didReceiveResponse response: NSURLResponse) {
         expectedLength = max(response.expectedContentLength, 1)
         currentLength = 0
-        HUD!.mode = MBProgressHUDMode.MBProgressHUDModeDeterminate
+        HUD!.mode = MBProgressHUDMode.Determinate
     }
     
     func connection(connection: NSURLConnection, didReceiveData data: NSData) {
@@ -257,7 +257,7 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
     
     func connectionDidFinishLoading(connection: NSURLConnection) {
         HUD!.customView = UIImageView(image: UIImage(named: "37x-Checkmark.png"))
-        HUD!.mode = .MBProgressHUDModeCustomView
+        HUD!.mode = .CustomView
         HUD!.hide(true, afterDelay: 2)
     }
     
