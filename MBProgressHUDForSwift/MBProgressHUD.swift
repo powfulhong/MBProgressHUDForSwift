@@ -289,7 +289,7 @@ class MBProgressHUD: UIView {
         self.showStarted = nil
     }
     
-    private func animationFinished(animationID: String?, finished: Bool, context: UnsafeMutablePointer<Void>) {
+    func animationFinished(animationID: String?, finished: Bool, context: UnsafeMutablePointer<Void>) {
         self.done()
     }
     
@@ -346,14 +346,14 @@ class MBProgressHUD: UIView {
         self.show(animated)
     }
     
-    private func launchExecution() {
+    func launchExecution() {
         autoreleasepool {
             (targetForExecution as! NSObject).swift_performSelector(methodForExecution!, withObject: objectForExecution)
             self.swift_performSelectorOnMainThread(Selector("cleanUp"), withObject: nil, waitUntilDone: false)
         }
     }
     
-    private func cleanUp() {
+    func cleanUp() {
         taskInprogress = false
         targetForExecution = nil
         objectForExecution = nil
