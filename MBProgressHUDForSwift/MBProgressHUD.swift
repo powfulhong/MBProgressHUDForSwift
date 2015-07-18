@@ -14,19 +14,19 @@ import Dispatch
 }
 
 enum MBProgressHUDMode: Int {
-    case MBProgressHUDModeIndeterminate = 0
-    case MBProgressHUDModeDeterminate
-    case MBProgressHUDModeDeterminateHorizontalBar
-    case MBProgressHUDModeAnnularDeterminate
-    case MBProgressHUDModeCustomView
-    case MBProgressHUDModeText
+    case Indeterminate = 0
+    case Determinate
+    case DeterminateHorizontalBar
+    case AnnularDeterminate
+    case CustomView
+    case Text
 }
 
 enum MBProgressHUDAnimation: Int {
-    case MBProgressHUDAnimationFade = 0
-    case MBProgressHUDAnimationZoom
-    case MBProgressHUDAnimationZoomOut
-    case MBProgressHUDAnimationZoomIn
+    case Fade = 0
+    case Zoom
+    case ZoomOut
+    case ZoomIn
 }
 
 typealias MBProgressHUDCompletionBlock = () -> Void
@@ -66,8 +66,8 @@ class MBProgressHUD: UIView {
         }
     }
     
-    var animationType = MBProgressHUDAnimation.MBProgressHUDAnimationFade
-    var mode = MBProgressHUDMode.MBProgressHUDModeIndeterminate {
+    var animationType = MBProgressHUDAnimation.Fade
+    var mode = MBProgressHUDMode.Indeterminate {
         didSet {
             self.updateIndicators()
             self.swift_performSelectorOnMainThread("setNeedsLayout", withObject: nil, waitUntilDone: false)
@@ -223,14 +223,14 @@ class MBProgressHUD: UIView {
     }
     
     // MARK: - Timer callbacks
-    func handleGraceTimer(theTimer: NSTimer) {
+    private func handleGraceTimer(theTimer: NSTimer) {
         // Show the HUD only if the task is still running
         if taskInprogress {
             self.showUsingAnimation(useAnimation!)
         }
     }
     
-    func handleMinShowTimer(theTimer: NSTimer) {
+    private func handleMinShowTimer(theTimer: NSTimer) {
         self.hideUsingAnimation(useAnimation!)
     }
     
@@ -240,23 +240,23 @@ class MBProgressHUD: UIView {
     }
     
     // MARK: -  Internal show & hide operations
-    func showUsingAnimation(animated: Bool) {
+    private func showUsingAnimation(animated: Bool) {
         // Cancel any scheduled hideDelayed: calls
         NSObject.cancelPreviousPerformRequestsWithTarget(self)
         self.setNeedsDisplay()
         
-        if animated && animationType == .MBProgressHUDAnimationZoomIn {
+        if animated && animationType == .ZoomIn {
             self.transform = CGAffineTransformConcat(rotationTransform, CGAffineTransformMakeScale(0.5, 0.5))
-        } else if animated && animationType == .MBProgressHUDAnimationZoomOut {
+        } else if animated && animationType == .ZoomOut {
             self.transform = CGAffineTransformConcat(rotationTransform, CGAffineTransformMakeScale(1.5, 1.5))
         }
         self.showStarted = NSDate()
         //Fade in
         if animated {
-            UIView.beginAnimations("", context:nil)
+            UIView.beginAnimations(nil, context:nil)
             UIView.setAnimationDuration(0.30)
             self.alpha = 1.0
-            if animationType == .MBProgressHUDAnimationZoomIn || animationType == .MBProgressHUDAnimationZoomOut {
+            if animationType == .ZoomIn || animationType == .ZoomOut {
                 self.transform = rotationTransform
             }
             UIView.commitAnimations()
@@ -265,7 +265,7 @@ class MBProgressHUD: UIView {
         }
     }
     
-    func hideUsingAnimation(animated: Bool) {
+    private func hideUsingAnimation(animated: Bool) {
         // Fade out
         if animated && showStarted != nil {
             UIView.beginAnimations(nil, context: nil)
@@ -274,9 +274,9 @@ class MBProgressHUD: UIView {
             UIView.setAnimationDidStopSelector(Selector("animationFinished:finished:context:"))
             // 0.02 prevents the hud from passing through touches during the animation the hud will get completely hidden
             // in the done method
-            if animationType == .MBProgressHUDAnimationZoomIn {
+            if animationType == .ZoomIn {
                 self.transform = CGAffineTransformConcat(rotationTransform, CGAffineTransformMakeScale(1.5, 1.5))
-            } else if animationType == .MBProgressHUDAnimationZoomOut {
+            } else if animationType == .ZoomOut {
                 self.transform = CGAffineTransformConcat(rotationTransform, CGAffineTransformMakeScale(0.5, 0.5))
             }
             
@@ -289,11 +289,11 @@ class MBProgressHUD: UIView {
         self.showStarted = nil
     }
     
-    func animationFinished(animationID: String?, finished: Bool, context: UnsafeMutablePointer<Void>) {
+    private func animationFinished(animationID: String?, finished: Bool, context: UnsafeMutablePointer<Void>) {
         self.done()
     }
     
-    func done() {
+    private func done() {
         NSObject.cancelPreviousPerformRequestsWithTarget(self)
         
         isFinished = true
@@ -346,14 +346,14 @@ class MBProgressHUD: UIView {
         self.show(animated)
     }
     
-    func launchExecution() {
+    private func launchExecution() {
         autoreleasepool {
             (targetForExecution as! NSObject).swift_performSelector(methodForExecution!, withObject: objectForExecution)
             self.swift_performSelectorOnMainThread(Selector("cleanUp"), withObject: nil, waitUntilDone: false)
         }
     }
     
-    func cleanUp() {
+    private func cleanUp() {
         taskInprogress = false
         targetForExecution = nil
         objectForExecution = nil
@@ -363,7 +363,7 @@ class MBProgressHUD: UIView {
     }
     
     // MARK: - UI
-    func setupLabels() {
+    private func setupLabels() {
         label = UILabel(frame: self.bounds)
         label!.adjustsFontSizeToFitWidth = false
         label!.textAlignment = NSTextAlignment.Center
@@ -387,11 +387,11 @@ class MBProgressHUD: UIView {
         self.addSubview(detailsLabel!)
     }
     
-    func updateIndicators() {
+    private func updateIndicators() {
         let isActivityIndicator: Bool = indicator is UIActivityIndicatorView
         let isRoundIndicator: Bool = indicator is MBRoundProgressView
         
-        if mode == MBProgressHUDMode.MBProgressHUDModeIndeterminate {
+        if mode == MBProgressHUDMode.Indeterminate {
             if !isActivityIndicator {
                 indicator?.removeFromSuperview()
                 indicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
@@ -399,45 +399,45 @@ class MBProgressHUD: UIView {
                 self.addSubview(indicator!)
             }
             (indicator as! UIActivityIndicatorView).color = activityIndicatorColor
-        } else if mode == MBProgressHUDMode.MBProgressHUDModeDeterminateHorizontalBar {
+        } else if mode == MBProgressHUDMode.DeterminateHorizontalBar {
             indicator?.removeFromSuperview()
             indicator = MBBarProgressView()
             self.addSubview(indicator!)
-        } else if mode == MBProgressHUDMode.MBProgressHUDModeDeterminate || mode == MBProgressHUDMode.MBProgressHUDModeAnnularDeterminate {
+        } else if mode == MBProgressHUDMode.Determinate || mode == MBProgressHUDMode.AnnularDeterminate {
             if !isRoundIndicator {
                 indicator?.removeFromSuperview()
                 indicator = MBRoundProgressView()
                 self.addSubview(indicator!)
             }
-            if mode == MBProgressHUDMode.MBProgressHUDModeAnnularDeterminate {
+            if mode == MBProgressHUDMode.AnnularDeterminate {
                 (indicator as! MBRoundProgressView).annular = true
             }
-        } else if mode == MBProgressHUDMode.MBProgressHUDModeCustomView && customView != indicator {
+        } else if mode == MBProgressHUDMode.CustomView && customView != indicator {
             indicator?.removeFromSuperview()
             self.indicator = customView
             self.addSubview(indicator!)
-        } else if mode == MBProgressHUDMode.MBProgressHUDModeText {
+        } else if mode == MBProgressHUDMode.Text {
             indicator?.removeFromSuperview()
             indicator = nil
         }
     }
     
     // MARK: - Notificaiton
-    func registerForNotifications() {
+    private func registerForNotifications() {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "statusBarOrientationDidChange:", name: UIApplicationDidChangeStatusBarOrientationNotification, object: nil)
     }
     
-    func unregisterFromNotifications() {
+    private func unregisterFromNotifications() {
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIApplicationDidChangeStatusBarOrientationNotification, object: nil)
     }
     
-    func statusBarOrientationDidChange(notification: NSNotification) {
+    private func statusBarOrientationDidChange(notification: NSNotification) {
         if let superView = self.superview {
             self.updateForCurrentOrientationAnimaged(true)
         }
     }
     
-    func updateForCurrentOrientationAnimaged(animated: Bool) {
+    private func updateForCurrentOrientationAnimaged(animated: Bool) {
         // Stay in sync with the superview in any case
         if self.superview != nil {
             self.bounds = self.superview!.bounds
@@ -578,7 +578,7 @@ class MBProgressHUD: UIView {
     }
 }
 
-    // MARK: - Class methods
+// MARK: - Class methods
 extension MBProgressHUD {
     
     class func showHUDAddedTo(view: UIView, animated: Bool) -> MBProgressHUD {
