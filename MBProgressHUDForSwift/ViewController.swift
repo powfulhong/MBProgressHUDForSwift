@@ -199,6 +199,20 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         HUD!.showWhileExecuting("myTask", onTarget: self, withObject: nil, animated: true)
     }
     
+    @IBAction func showSimpleWithIndeterminatedRound(sender: UIButton) {
+        // The hud will dispable all input on the view (use the higest view possible in the view hierarchy)
+        HUD = MBProgressHUD(view: self.navigationController!.view)
+        self.navigationController!.view.addSubview(HUD!)
+        
+        // Register for HUD callbacks so we can remove it from the window at the right time
+        HUD!.delegate = self
+        
+        HUD!.mode = .AnnularIndeterminate
+        
+        // Show the HUD while the provide method  executes in a new thread
+        HUD!.showWhileExecuting(Selector("myTask"), onTarget: self, withObject: nil, animated: true)
+    }
+    
     // MARK: - Execution code
     func myTask() {
         // Do something useful in here instead of sleeping...

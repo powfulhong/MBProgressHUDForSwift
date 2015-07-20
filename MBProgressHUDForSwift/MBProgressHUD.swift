@@ -15,6 +15,7 @@ import Dispatch
 
 enum MBProgressHUDMode: Int {
     case Indeterminate = 0
+    case AnnularIndeterminate   //
     case Determinate
     case DeterminateHorizontalBar
     case AnnularDeterminate
@@ -44,7 +45,7 @@ func MB_MULTILINE_TEXTSIZE(text: String?, font: UIFont, maxSize: CGSize, mode: N
 }
 
 class MBProgressHUD: UIView {
-    var useAnimation: Bool?
+    var useAnimation: Bool = true
     var methodForExecution: Selector?
     var targetForExecution: AnyObject?
     var objectForExecution: AnyObject?
@@ -192,7 +193,7 @@ class MBProgressHUD: UIView {
         }
         // ... otherwise show the HUD imediately
         else {
-            self.showUsingAnimation(useAnimation!)
+            self.showUsingAnimation(useAnimation)
         }
     }
     
@@ -209,7 +210,7 @@ class MBProgressHUD: UIView {
             }
         }
         // ... otherwise hide the HUD immediately
-        self.hideUsingAnimation(useAnimation!)
+        self.hideUsingAnimation(useAnimation)
     }
     
     func hide(animated: Bool, afterDelay delay: NSTimeInterval) {
@@ -226,12 +227,12 @@ class MBProgressHUD: UIView {
     private func handleGraceTimer(theTimer: NSTimer) {
         // Show the HUD only if the task is still running
         if taskInprogress {
-            self.showUsingAnimation(useAnimation!)
+            self.showUsingAnimation(useAnimation)
         }
     }
     
     private func handleMinShowTimer(theTimer: NSTimer) {
-        self.hideUsingAnimation(useAnimation!)
+        self.hideUsingAnimation(useAnimation)
     }
     
     // MARK: - View Hierrarchy
@@ -359,7 +360,7 @@ class MBProgressHUD: UIView {
         objectForExecution = nil
         methodForExecution = nil
         
-        self.hide(useAnimation!)
+        self.hide(useAnimation)
     }
     
     // MARK: - UI
@@ -390,6 +391,7 @@ class MBProgressHUD: UIView {
     private func updateIndicators() {
         let isActivityIndicator: Bool = indicator is UIActivityIndicatorView
         let isRoundIndicator: Bool = indicator is MBRoundProgressView
+        let isIndeterminatedRoundIndicator: Bool = indicator is MBIndeterminatedRoundProgressView
         
         if mode == MBProgressHUDMode.Indeterminate {
             if !isActivityIndicator {
@@ -399,6 +401,12 @@ class MBProgressHUD: UIView {
                 self.addSubview(indicator!)
             }
             (indicator as! UIActivityIndicatorView).color = activityIndicatorColor
+        } else if mode == MBProgressHUDMode.AnnularIndeterminate {
+            if !isIndeterminatedRoundIndicator {
+                indicator?.removeFromSuperview()
+                indicator = MBIndeterminatedRoundProgressView()
+                self.addSubview(indicator!)
+            }
         } else if mode == MBProgressHUDMode.DeterminateHorizontalBar {
             indicator?.removeFromSuperview()
             indicator = MBBarProgressView()
@@ -853,9 +861,72 @@ class MBBarProgressView: UIView {
             
             CGContextMoveToPoint(context, 4, rect.size.height / 2)
             CGContextAddArcToPoint(context, 4, rect.size.height - 4, radius + 4, rect.size.height - 4, radius)
-            CGContextAddLineToPoint(context, radius + 4, rect.size.height/2)
+            CGContextAddLineToPoint(context, radius + 4, rect.size.height / 2)
             
             CGContextFillPath(context)
         }
+    }
+}
+
+// MARK: - MBIndeterminatedRoundProgressView
+class MBIndeterminatedRoundProgressView: UIView {
+    private let circleLayer: CAShapeLayer = CAShapeLayer()
+    
+    var lineColor: UIColor = UIColor.whiteColor() {
+        didSet {
+            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+        }
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        self.backgroundColor = UIColor.clearColor()
+        self.opaque = false
+        
+        setupAndStartRotatingCircle()
+    }
+    
+    convenience init() {
+        self.init(frame: CGRectMake(0.0, 0.0, 37.0, 37.0))
+    }
+
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupAndStartRotatingCircle() {
+        let circlePath = UIBezierPath(roundedRect: self.bounds, cornerRadius: self.bounds.size.width / 2)
+        circleLayer.frame = self.bounds
+        circleLayer.path = circlePath.CGPath
+        circleLayer.strokeColor = lineColor.CGColor
+        circleLayer.lineWidth = 2.0
+        circleLayer.fillColor = UIColor.clearColor().CGColor
+        
+        self.layer.addSublayer(circleLayer)
+        
+        startRotatingCircle()
+    }
+    
+    private func startRotatingCircle() {
+        let animationForStrokeEnd = CABasicAnimation(keyPath: "strokeEnd")
+        animationForStrokeEnd.fromValue = 0.0
+        animationForStrokeEnd.toValue = 1.0
+        animationForStrokeEnd.duration = 0.4
+        animationForStrokeEnd.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+        
+        let animationForStrokeStart = CABasicAnimation(keyPath: "strokeStart")
+        animationForStrokeStart.fromValue = 0.0
+        animationForStrokeStart.toValue = 1.0
+        animationForStrokeStart.duration = 0.4
+        animationForStrokeStart.beginTime = 0.5
+        animationForStrokeStart.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn)
+        
+        let animationGroup = CAAnimationGroup()
+        animationGroup.animations = [animationForStrokeEnd, animationForStrokeStart]
+        animationGroup.duration = 0.9
+        animationGroup.repeatCount = MAXFLOAT
+        
+        circleLayer.addAnimation(animationGroup, forKey: nil)
     }
 }
