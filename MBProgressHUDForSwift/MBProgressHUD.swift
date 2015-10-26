@@ -9,6 +9,16 @@
 import UIKit
 import Dispatch
 
+//MARK: - Extension UIView
+extension UIView {
+    func updateUI() {
+        dispatch_async(dispatch_get_main_queue()) { () -> Void in
+            self.setNeedsLayout()
+            self.setNeedsDisplay()
+        }
+    }
+}
+
 @objc protocol MBProgressHUDDelegate {
     optional func hudWasHidden(hud: MBProgressHUD)
 }
@@ -69,8 +79,7 @@ class MBProgressHUD: UIView {
     var customView: UIView? {
         didSet {
             self.updateIndicators()
-            self.swift_performSelectorOnMainThread("setNeedsLayout", withObject: nil, waitUntilDone: false)
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     
@@ -78,22 +87,19 @@ class MBProgressHUD: UIView {
     var mode = MBProgressHUDMode.Indeterminate {
         didSet {
             self.updateIndicators()
-            self.swift_performSelectorOnMainThread("setNeedsLayout", withObject: nil, waitUntilDone: false)
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     var labelText: String? {
         didSet {
             label!.text = labelText
-            self.swift_performSelectorOnMainThread("setNeedsLayout", withObject: nil, waitUntilDone: false)
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     var detailsLabelText: String? {
         didSet {
             detailsLabel!.text = detailsLabelText
-            self.swift_performSelectorOnMainThread("setNeedsLayout", withObject: nil, waitUntilDone: false)
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     var opacity = 0.8
@@ -101,36 +107,31 @@ class MBProgressHUD: UIView {
     var labelFont = UIFont.boldSystemFontOfSize(kLabelFontSize) {
         didSet {
             label!.font = labelFont
-            self.swift_performSelectorOnMainThread("setNeedsLayout", withObject: nil, waitUntilDone: false)
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     var labelColor = UIColor.whiteColor() {
         didSet {
             label!.textColor = labelColor
-            self.swift_performSelectorOnMainThread("setNeedsLayout", withObject: nil, waitUntilDone: false)
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     var detailsLabelFont = UIFont.boldSystemFontOfSize(kDetailsLabelFontSize) {
         didSet {
             detailsLabel!.font = detailsLabelFont
-            self.swift_performSelectorOnMainThread("setNeedsLayout", withObject: nil, waitUntilDone: false)
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     var detailsLabelColor = UIColor.whiteColor() {
         didSet {
             detailsLabel!.textColor = detailsLabelColor
-            self.swift_performSelectorOnMainThread("setNeedsLayout", withObject: nil, waitUntilDone: false)
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     var activityIndicatorColor = UIColor.whiteColor() {
         didSet {
             self.updateIndicators()
-            self.swift_performSelectorOnMainThread("setNeedsLayout", withObject: nil, waitUntilDone: false)
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     var xOffset = 0.0
@@ -653,25 +654,29 @@ extension MBProgressHUD {
 class MBRoundProgressView: UIView {
     var progress: Float = 0.0 {
         didSet {
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+//            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     
     var progressTintColor: UIColor? {
         didSet {
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+//            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     
     var backgroundTintColor: UIColor? {
         didSet {
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+//            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     
     var annular: Bool = false {
         didSet {
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+//            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     
@@ -748,25 +753,25 @@ class MBRoundProgressView: UIView {
 class MBBarProgressView: UIView {
     var progress: Float = 0.0 {
         didSet {
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     
     var lineColor: UIColor? {
         didSet {
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     
     var progressRemainingColor: UIColor? {
         didSet {
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     
     var progressColor: UIColor? {
         didSet {
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     
@@ -881,7 +886,7 @@ class MBIndeterminatedRoundProgressView: UIView {
     
     var lineColor: UIColor = UIColor.whiteColor() {
         didSet {
-            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
+            self.updateUI()
         }
     }
     
