@@ -37,27 +37,34 @@ let kLabelFontSize: CGFloat = 16.0
 let kDetailsLabelFontSize: CGFloat = 12.0
 
 func MB_TEXTSIZE(text: String?, font: UIFont) -> CGSize {
-    return (text != nil && count(text!) > 0) ? (text! as NSString).sizeWithAttributes([NSFontAttributeName: font]) : CGSizeZero
+    guard let textTemp = text where textTemp.characters.count > 0 else {
+        return CGSizeZero
+    }
+    
+    return (textTemp as NSString).sizeWithAttributes([NSFontAttributeName: font])
 }
 
 func MB_MULTILINE_TEXTSIZE(text: String?, font: UIFont, maxSize: CGSize, mode: NSLineBreakMode) -> CGSize {
-    return (text != nil && count(text!) > 0) ? (text! as NSString).boundingRectWithSize(maxSize, options: NSStringDrawingOptions.UsesLineFragmentOrigin, attributes: [NSFontAttributeName: font], context: nil).size : CGSizeZero
+    guard let textTemp = text where textTemp.characters.count > 0 else {
+        return CGSizeZero
+    }
+    
+    return (textTemp as NSString).boundingRectWithSize(maxSize, options: NSStringDrawingOptions.UsesLineFragmentOrigin, attributes: [NSFontAttributeName: font], context: nil).size
 }
 
 class MBProgressHUD: UIView {
-    var useAnimation: Bool = true
-    var methodForExecution: Selector?
-    var targetForExecution: AnyObject?
-    var objectForExecution: AnyObject?
-    var label: UILabel?
-    var detailsLabel: UILabel?
-//    var isFinished: Bool?
-    var rotationTransform: CGAffineTransform = CGAffineTransformIdentity
+    private var useAnimation: Bool = true
+    private var methodForExecution: Selector?
+    private var targetForExecution: AnyObject?
+    private var objectForExecution: AnyObject?
+    private var label: UILabel?
+    private var detailsLabel: UILabel?
+    private var rotationTransform: CGAffineTransform = CGAffineTransformIdentity
     
-    var indicator: UIView?
-    var graceTimer: NSTimer?
-    var minShowTimer: NSTimer?
-    var showStarted: NSDate?
+    private var indicator: UIView?
+    private var graceTimer: NSTimer?
+    private var minShowTimer: NSTimer?
+    private var showStarted: NSDate?
     
     var customView: UIView? {
         didSet {
@@ -155,13 +162,13 @@ class MBProgressHUD: UIView {
         super.init(frame: frame)
         
         self.contentMode = UIViewContentMode.Center
-        self.autoresizingMask = UIViewAutoresizing.FlexibleTopMargin | UIViewAutoresizing.FlexibleBottomMargin | UIViewAutoresizing.FlexibleLeftMargin | UIViewAutoresizing.FlexibleRightMargin
+        self.autoresizingMask = [UIViewAutoresizing.FlexibleTopMargin, UIViewAutoresizing.FlexibleBottomMargin, UIViewAutoresizing.FlexibleLeftMargin, UIViewAutoresizing.FlexibleRightMargin]
         self.opaque = false
         self.backgroundColor = UIColor.clearColor()
         self.alpha = 0.0
         
-        setupLabels()
-        updateIndicators()
+        self.setupLabels()
+        self.updateIndicators()
     }
     
     convenience init(view: UIView?) {
@@ -174,7 +181,7 @@ class MBProgressHUD: UIView {
         self.init(view: window)
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -440,7 +447,7 @@ class MBProgressHUD: UIView {
     }
     
     private func statusBarOrientationDidChange(notification: NSNotification) {
-        if let superView = self.superview {
+        if let _ = self.superview {
             self.updateForCurrentOrientationAnimaged(true)
         }
     }
@@ -473,7 +480,7 @@ class MBProgressHUD: UIView {
         totalSize.width = max(totalSize.width, indicatorF.size.width)
         totalSize.height += indicatorF.size.height
         
-        var labelSize: CGSize = MB_TEXTSIZE(label!.text, label!.font)
+        var labelSize: CGSize = MB_TEXTSIZE(label!.text, font: label!.font)
         labelSize.width = min(labelSize.width, maxWidth)
         totalSize.width = max(totalSize.width, labelSize.width)
         totalSize.height += labelSize.height
@@ -481,9 +488,9 @@ class MBProgressHUD: UIView {
             totalSize.height += kPadding
         }
         
-        var remainingHeight: CGFloat = bounds.size.height - totalSize.height - kPadding - 4 * CGFloat(margin)
-        var maxSize: CGSize = CGSizeMake(maxWidth, remainingHeight)
-        var detailsLabelSize: CGSize = MB_MULTILINE_TEXTSIZE(detailsLabel!.text, detailsLabel!.font, maxSize, detailsLabel!.lineBreakMode)
+        let remainingHeight: CGFloat = bounds.size.height - totalSize.height - kPadding - 4 * CGFloat(margin)
+        let maxSize: CGSize = CGSizeMake(maxWidth, remainingHeight)
+        let detailsLabelSize: CGSize = MB_MULTILINE_TEXTSIZE(detailsLabel!.text, font: detailsLabel!.font, maxSize: maxSize, mode: detailsLabel!.lineBreakMode)
         totalSize.width = max(totalSize.width, detailsLabelSize.width)
         totalSize.height += detailsLabelSize.height
         if detailsLabelSize.height > 0.0 && (indicatorF.size.height > 0.0 || labelSize.height > 0.0) {
@@ -495,7 +502,7 @@ class MBProgressHUD: UIView {
         
         // Position elements
         var yPos: CGFloat = round(((bounds.size.height - totalSize.height) / 2)) + CGFloat(margin) + CGFloat(yOffset)
-        var xPos: CGFloat = CGFloat(xOffset)
+        let xPos: CGFloat = CGFloat(xOffset)
         indicatorF.origin.y = yPos
         indicatorF.origin.x = round((bounds.size.width - indicatorF.size.width) / 2) + xPos
         indicator?.frame = indicatorF
@@ -542,7 +549,7 @@ class MBProgressHUD: UIView {
     
     // MARK: - BG Drawing
     override func drawRect(rect: CGRect) {
-        let context: CGContextRef = UIGraphicsGetCurrentContext()
+        let context: CGContextRef = UIGraphicsGetCurrentContext()!
         UIGraphicsPushContext(context)
         
         if self.dimBackground {
@@ -550,14 +557,14 @@ class MBProgressHUD: UIView {
             let gradLocationsNum: size_t = 2
             let gradLocations: [CGFloat] = [0.0, 1.0]
             let gradColors: [CGFloat] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.75]
-            let colorSpace: CGColorSpaceRef = CGColorSpaceCreateDeviceRGB()
-            let gradient: CGGradientRef = CGGradientCreateWithColorComponents(colorSpace, gradColors, gradLocations, gradLocationsNum)
+            let colorSpace: CGColorSpaceRef = CGColorSpaceCreateDeviceRGB()!
+            let gradient: CGGradientRef = CGGradientCreateWithColorComponents(colorSpace, gradColors, gradLocations, gradLocationsNum)!
             //Gradient center
             let gradCenter: CGPoint = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height / 2)
             //Gradient radius
             let gradRadius: CGFloat = min(self.bounds.size.width , self.bounds.size.height)
             //Gradient draw
-            CGContextDrawRadialGradient(context, gradient, gradCenter, 0, gradCenter, gradRadius,CGGradientDrawingOptions(kCGGradientDrawsAfterEndLocation))
+            CGContextDrawRadialGradient(context, gradient, gradCenter, 0, gradCenter, gradRadius,CGGradientDrawingOptions.DrawsAfterEndLocation)
         }
         
         // Set background rect color
@@ -599,7 +606,7 @@ extension MBProgressHUD {
     }
     
     class func hideHUDForView(view: UIView, animated: Bool) -> Bool {
-        var hud: MBProgressHUD? = self.HUDForView(view)
+        let hud: MBProgressHUD? = self.HUDForView(view)
         if hud != nil {
             hud!.removeFromSuperViewOnHide = true
             hud!.hide(animated)
@@ -621,7 +628,7 @@ extension MBProgressHUD {
     }
     
     class func HUDForView(view: UIView) -> MBProgressHUD? {
-        for subview in view.subviews.reverse() {
+        for subview in Array(view.subviews.reverse()) {
             if subview is MBProgressHUD {
                 return subview as? MBProgressHUD
             }
@@ -681,14 +688,14 @@ class MBRoundProgressView: UIView {
         backgroundTintColor = UIColor(white: 1.0, alpha: 0.1)
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     override func drawRect(rect: CGRect) {
         let allRect: CGRect = self.bounds
         let circleRect: CGRect = CGRectInset(allRect, 2.0, 2.0)
-        let context: CGContextRef = UIGraphicsGetCurrentContext()
+        let context: CGContextRef = UIGraphicsGetCurrentContext()!
         
         if annular {
             // Draw background
@@ -696,11 +703,11 @@ class MBRoundProgressView: UIView {
             let processBackgroundPath: UIBezierPath = UIBezierPath()
             
             processBackgroundPath.lineWidth = lineWidth
-            processBackgroundPath.lineCapStyle = kCGLineCapButt
+            processBackgroundPath.lineCapStyle = CGLineCap.Butt
             
             let center: CGPoint = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height / 2)
             let radius: CGFloat = (self.bounds.size.width - lineWidth) / 2
-            var startAngle: CGFloat = -(CGFloat(M_PI) / 2)
+            let startAngle: CGFloat = -(CGFloat(M_PI) / 2)
             var endAngle: CGFloat = (2 * CGFloat(M_PI)) + startAngle
             processBackgroundPath.addArcWithCenter(center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
             backgroundTintColor!.set()
@@ -708,7 +715,7 @@ class MBRoundProgressView: UIView {
             
             // Draw progress
             let processPath: UIBezierPath = UIBezierPath()
-            processPath.lineCapStyle = kCGLineCapSquare
+            processPath.lineCapStyle = CGLineCap.Square
             processPath.lineWidth = lineWidth
             endAngle = CGFloat(progress) * 2 * CGFloat(M_PI) + startAngle
             processPath.addArcWithCenter(center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
@@ -779,12 +786,12 @@ class MBBarProgressView: UIView {
         self.opaque = false
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     override func drawRect(rect: CGRect) {
-        var context: CGContextRef = UIGraphicsGetCurrentContext()
+        let context: CGContextRef = UIGraphicsGetCurrentContext()!
         
         CGContextSetLineWidth(context, 2)
         CGContextSetStrokeColorWithColor(context, lineColor!.CGColor)
@@ -813,7 +820,7 @@ class MBBarProgressView: UIView {
         
         CGContextSetFillColorWithColor(context, progressColor!.CGColor)
         radius = radius - 2
-        var amount: CGFloat = CGFloat(progress) * rect.size.width
+        let amount: CGFloat = CGFloat(progress) * rect.size.width
         
         // Progress in the middle area
         if amount >= radius + 4 && amount <= (rect.size.width - radius - 4) {
@@ -850,7 +857,7 @@ class MBBarProgressView: UIView {
             CGContextAddArc(context, rect.size.width - radius - 4, rect.size.height / 2, radius, CGFloat(-M_PI), angle, 1)
             CGContextAddLineToPoint(context, amount, rect.size.height / 2)
             
-            CGContextFillPath(context);
+            CGContextFillPath(context)
         }
             
             // Progress is in the left arc
@@ -891,7 +898,7 @@ class MBIndeterminatedRoundProgressView: UIView {
         self.init(frame: CGRectMake(0.0, 0.0, 37.0, 37.0))
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -902,6 +909,7 @@ class MBIndeterminatedRoundProgressView: UIView {
         circleLayer.strokeColor = lineColor.CGColor
         circleLayer.lineWidth = 2.0
         circleLayer.fillColor = UIColor.clearColor().CGColor
+        circleLayer.lineCap = kCALineCapRound
         
         self.layer.addSublayer(circleLayer)
         
