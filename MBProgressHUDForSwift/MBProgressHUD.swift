@@ -19,10 +19,12 @@ extension UIView {
     }
 }
 
+//MARK: - MBProgressHUDDelegate
 @objc protocol MBProgressHUDDelegate {
     optional func hudWasHidden(hud: MBProgressHUD)
 }
 
+//MARK: - ENUM
 enum MBProgressHUDMode: Int {
     case Indeterminate = 0
     case AnnularIndeterminate   //
@@ -40,7 +42,9 @@ enum MBProgressHUDAnimation: Int {
     case ZoomIn
 }
 
+//MARK: - Global var and func
 typealias MBProgressHUDCompletionBlock = () -> Void
+typealias MBProgressHUDExecutionClosures = () -> Void
 
 let kPadding: CGFloat = 4.0
 let kLabelFontSize: CGFloat = 16.0
@@ -62,11 +66,13 @@ func MB_MULTILINE_TEXTSIZE(text: String?, font: UIFont, maxSize: CGSize, mode: N
     return (textTemp as NSString).boundingRectWithSize(maxSize, options: NSStringDrawingOptions.UsesLineFragmentOrigin, attributes: [NSFontAttributeName: font], context: nil).size
 }
 
+//MARK: - MBProgressHUD
 class MBProgressHUD: UIView {
     private var useAnimation: Bool = true
-    private var methodForExecution: Selector?
-    private var targetForExecution: AnyObject?
-    private var objectForExecution: AnyObject?
+//    private var methodForExecution: Selector?
+//    private var targetForExecution: AnyObject?
+//    private var objectForExecution: AnyObject?
+    private var closureForExecution: MBProgressHUDExecutionClosures?
     private var label: UILabel?
     private var detailsLabel: UILabel?
     private var rotationTransform: CGAffineTransform = CGAffineTransformIdentity
@@ -321,12 +327,24 @@ class MBProgressHUD: UIView {
     
     // MARK: - Threading
     func showWhileExecuting(method: Selector, onTarget target: AnyObject, withObject object: AnyObject?, animated: Bool) {
-        methodForExecution = method
-        targetForExecution = target
-        objectForExecution = object
+//        methodForExecution = method
+//        targetForExecution = target
+//        objectForExecution = object
         // Launch execution in new thread
         taskInprogress = true
         NSThread.detachNewThreadSelector("launchExecution", toTarget: self, withObject: nil)
+        // Show HUD view
+        self.show(animated)
+    }
+    
+    func showWhileExecuting(closures: MBProgressHUDExecutionClosures, animated: Bool) {
+        // Launch execution in new thread
+        taskInprogress = true
+        closureForExecution = closures
+        
+        NSThread.detachNewThreadSelector("launchExecution_closures", toTarget: self, withObject: nil)
+        
+        
         // Show HUD view
         self.show(animated)
     }
@@ -357,16 +375,26 @@ class MBProgressHUD: UIView {
     
     func launchExecution() {
         autoreleasepool {
-            (targetForExecution as! NSObject).swift_performSelector(methodForExecution!, withObject: objectForExecution)
-            self.swift_performSelectorOnMainThread(Selector("cleanUp"), withObject: nil, waitUntilDone: false)
+//            (targetForExecution as! NSObject).swift_performSelector(methodForExecution!, withObject: objectForExecution)
+//            self.swift_performSelectorOnMainThread(Selector("cleanUp"), withObject: nil, waitUntilDone: false)
+        }
+    }
+    
+    func launchExecution_closures() {
+        autoreleasepool { () -> () in
+            closureForExecution!()
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.cleanUp()
+            })
         }
     }
     
     func cleanUp() {
         taskInprogress = false
-        targetForExecution = nil
-        objectForExecution = nil
-        methodForExecution = nil
+//        targetForExecution = nil
+//        objectForExecution = nil
+//        methodForExecution = nil
+        closureForExecution = nil
         
         self.hide(useAnimation)
     }

@@ -8,6 +8,8 @@
 
 import UIKit
 
+let USECLOSURES = true
+
 class ViewController: UIViewController, MBProgressHUDDelegate {
     
     var HUD: MBProgressHUD?
@@ -38,7 +40,13 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         HUD!.delegate = self
         
         // Show the HUD while the provide method  executes in a new thread
-        HUD!.showWhileExecuting(Selector("myTask"), onTarget: self, withObject: nil, animated: true)
+        if USECLOSURES {
+            HUD!.showWhileExecuting({ [unowned self] () -> Void in
+                self.myTask()
+                }, animated: true)
+        } else {
+            HUD!.showWhileExecuting(Selector("myTask"), onTarget: self, withObject: nil, animated: true)
+        }
     }
 
     @IBAction func showWithLabel(sender: UIButton) {
@@ -48,7 +56,13 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         HUD!.delegate = self
         HUD!.labelText = "Loading"
         
-        HUD!.showWhileExecuting("myTask", onTarget: self, withObject: nil, animated: true)
+        if USECLOSURES {
+            HUD!.showWhileExecuting({ [unowned self] () -> Void in
+                self.myTask()
+                }, animated: true)
+        } else {
+            HUD!.showWhileExecuting(Selector("myTask"), onTarget: self, withObject: nil, animated: true)
+        }
     }
     
     @IBAction func showWithDetailsLabel(sender: UIButton) {
@@ -60,7 +74,13 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         HUD!.detailsLabelText = "updating data"
         HUD!.square = true
         
-        HUD!.showWhileExecuting("myTask", onTarget: self, withObject: nil, animated: true)
+        if USECLOSURES {
+            HUD!.showWhileExecuting({ [unowned self] () -> Void in
+                self.myTask()
+                }, animated: true)
+        } else {
+            HUD!.showWhileExecuting(Selector("myTask"), onTarget: self, withObject: nil, animated: true)
+        }
     }
     
     @IBAction func showWithLabelDeterminate(sender: UIButton) {
@@ -74,7 +94,13 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         HUD!.labelText = "Loading"
         
         // myProgressTask uses the HUD instance to update progress
-        HUD!.showWhileExecuting("myProgressTask", onTarget: self, withObject: nil, animated: true)
+        if USECLOSURES {
+            HUD!.showWhileExecuting({ [unowned self] () -> Void in
+                self.myProgressTask()
+                }, animated: true)
+        } else {
+            HUD!.showWhileExecuting(Selector("myProgressTask"), onTarget: self, withObject: nil, animated: true)
+        }
     }
     
     @IBAction func showWithLabelAnnularDeterminate(sender: UIButton) {
@@ -87,7 +113,13 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         HUD!.labelText = "Loading"
         
         // myProgressTask uses the HUD instance to update progress
-        HUD!.showWhileExecuting("myProgressTask", onTarget: self, withObject: nil, animated: true)
+        if USECLOSURES {
+            HUD!.showWhileExecuting({ [unowned self] () -> Void in
+                self.myProgressTask()
+                }, animated: true)
+        } else {
+            HUD!.showWhileExecuting(Selector("myProgressTask"), onTarget: self, withObject: nil, animated: true)
+        }
     }
     
     @IBAction func showWithLabelDeterminateHorizontalBar(sender: UIButton) {
@@ -100,7 +132,13 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         HUD!.delegate = self;
         
         // myProgressTask uses the HUD instance to update progress
-        HUD!.showWhileExecuting("myProgressTask", onTarget: self, withObject: nil, animated: true)
+        if USECLOSURES {
+            HUD!.showWhileExecuting({ [unowned self] () -> Void in
+                self.myProgressTask()
+                }, animated: true)
+        } else {
+            HUD!.showWhileExecuting(Selector("myProgressTask"), onTarget: self, withObject: nil, animated: true)
+        }
     }
     
     @IBAction func showWithCustomView(sender: UIButton) {
@@ -128,7 +166,13 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         HUD!.delegate = self
         HUD!.labelText = "Connecting"
         HUD!.minSize = CGSizeMake(135.0, 135.0)
-        HUD!.showWhileExecuting("myMixedTask", onTarget: self, withObject: nil, animated: true)
+        if USECLOSURES {
+            HUD!.showWhileExecuting({ [unowned self] () -> Void in
+                self.myMixedTask()
+                }, animated: true)
+        } else {
+            HUD!.showWhileExecuting(Selector("myMixedTask"), onTarget: self, withObject: nil, animated: true)
+        }
     }
     
     @IBAction func showUsingBlocks(sender: UIButton) {
@@ -151,7 +195,13 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         HUD!.delegate = self
         HUD!.labelText = "Loading"
         
-        HUD!.showWhileExecuting("myTask", onTarget: self, withObject: nil, animated: true)
+        if USECLOSURES {
+            HUD!.showWhileExecuting({ [unowned self] () -> Void in
+                self.myTask()
+                }, animated: true)
+        } else {
+            HUD!.showWhileExecuting(Selector("myTask"), onTarget: self, withObject: nil, animated: true)
+        }
     }
     
     @IBAction func showURL(sender: UIButton) {
@@ -173,7 +223,13 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         
         // Regiser for HUD callbacks so we can remove it from the window at the right time
         HUD!.delegate = self;
-        HUD!.showWhileExecuting("myTask", onTarget: self, withObject: nil, animated: true)
+        if USECLOSURES {
+            HUD!.showWhileExecuting({ [unowned self] () -> Void in
+                self.myTask()
+                }, animated: true)
+        } else {
+            HUD!.showWhileExecuting(Selector("myTask"), onTarget: self, withObject: nil, animated: true)
+        }
     }
     
     @IBAction func showTextOnly(sender: UIButton) {
@@ -196,7 +252,13 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         HUD!.color = UIColor(red: 0.23, green: 0.50, blue: 0.82, alpha: 0.90)
         HUD!.delegate = self;
         
-        HUD!.showWhileExecuting("myTask", onTarget: self, withObject: nil, animated: true)
+        if USECLOSURES {
+            HUD!.showWhileExecuting({ [unowned self] () -> Void in
+                self.myTask()
+                }, animated: true)
+        } else {
+            HUD!.showWhileExecuting(Selector("myTask"), onTarget: self, withObject: nil, animated: true)
+        }
     }
     
     @IBAction func showSimpleWithIndeterminatedRound(sender: UIButton) {
@@ -210,7 +272,13 @@ class ViewController: UIViewController, MBProgressHUDDelegate {
         HUD!.mode = .AnnularIndeterminate
         
         // Show the HUD while the provide method  executes in a new thread
-        HUD!.showWhileExecuting(Selector("myTask"), onTarget: self, withObject: nil, animated: true)
+        if USECLOSURES {
+            HUD!.showWhileExecuting({ [unowned self] () -> Void in
+                self.myTask()
+                }, animated: true)
+        } else {
+            HUD!.showWhileExecuting(Selector("myTask"), onTarget: self, withObject: nil, animated: true)
+        }
     }
     
     // MARK: - Execution code
