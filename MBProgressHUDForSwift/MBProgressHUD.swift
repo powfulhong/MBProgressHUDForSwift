@@ -69,9 +69,6 @@ func MB_MULTILINE_TEXTSIZE(text: String?, font: UIFont, maxSize: CGSize, mode: N
 //MARK: - MBProgressHUD
 class MBProgressHUD: UIView {
     private var useAnimation: Bool = true
-//    private var methodForExecution: Selector?
-//    private var targetForExecution: AnyObject?
-//    private var objectForExecution: AnyObject?
     private var closureForExecution: MBProgressHUDExecutionClosures?
     private var label: UILabel?
     private var detailsLabel: UILabel?
@@ -326,24 +323,12 @@ class MBProgressHUD: UIView {
     }
     
     // MARK: - Threading
-    func showWhileExecuting(method: Selector, onTarget target: AnyObject, withObject object: AnyObject?, animated: Bool) {
-//        methodForExecution = method
-//        targetForExecution = target
-//        objectForExecution = object
-        // Launch execution in new thread
-        taskInprogress = true
-        NSThread.detachNewThreadSelector("launchExecution", toTarget: self, withObject: nil)
-        // Show HUD view
-        self.show(animated)
-    }
-    
     func showWhileExecuting(closures: MBProgressHUDExecutionClosures, animated: Bool) {
         // Launch execution in new thread
         taskInprogress = true
         closureForExecution = closures
         
-        NSThread.detachNewThreadSelector("launchExecution_closures", toTarget: self, withObject: nil)
-        
+        NSThread.detachNewThreadSelector("launchExecution", toTarget: self, withObject: nil)
         
         // Show HUD view
         self.show(animated)
@@ -374,13 +359,6 @@ class MBProgressHUD: UIView {
     }
     
     func launchExecution() {
-        autoreleasepool {
-//            (targetForExecution as! NSObject).swift_performSelector(methodForExecution!, withObject: objectForExecution)
-//            self.swift_performSelectorOnMainThread(Selector("cleanUp"), withObject: nil, waitUntilDone: false)
-        }
-    }
-    
-    func launchExecution_closures() {
         autoreleasepool { () -> () in
             closureForExecution!()
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
@@ -391,9 +369,6 @@ class MBProgressHUD: UIView {
     
     func cleanUp() {
         taskInprogress = false
-//        targetForExecution = nil
-//        objectForExecution = nil
-//        methodForExecution = nil
         closureForExecution = nil
         
         self.hide(useAnimation)
@@ -682,28 +657,24 @@ extension MBProgressHUD {
 class MBRoundProgressView: UIView {
     var progress: Float = 0.0 {
         didSet {
-//            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
             self.updateUI()
         }
     }
     
     var progressTintColor: UIColor? {
         didSet {
-//            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
             self.updateUI()
         }
     }
     
     var backgroundTintColor: UIColor? {
         didSet {
-//            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
             self.updateUI()
         }
     }
     
     var annular: Bool = false {
         didSet {
-//            self.swift_performSelectorOnMainThread("setNeedsDisplay", withObject: nil, waitUntilDone: false)
             self.updateUI()
         }
     }
