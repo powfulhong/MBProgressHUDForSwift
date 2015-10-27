@@ -14,7 +14,6 @@
 		6CC588C01B5528900025EE89 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6CC588BE1B5528900025EE89 /* LaunchScreen.xib */; };
 		6CC588CC1B5528920025EE89 /* MBProgressHUDForSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC588CB1B5528920025EE89 /* MBProgressHUDForSwiftTests.swift */; };
 		6CC588D61B552B880025EE89 /* MBProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC588D51B552B880025EE89 /* MBProgressHUD.swift */; };
-		6CC588DF1B58B24B0025EE89 /* NSObject+PerformForSwift.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CC588DE1B58B24B0025EE89 /* NSObject+PerformForSwift.m */; };
 		6CC588E91B58FCAD0025EE89 /* 37x-Checkmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CC588E21B58FCAD0025EE89 /* 37x-Checkmark.png */; };
 		6CC588EA1B58FCAD0025EE89 /* 37x-Checkmark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CC588E31B58FCAD0025EE89 /* 37x-Checkmark@2x.png */; };
 		6CC588EB1B58FCAD0025EE89 /* Icon-iOS7@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CC588E41B58FCAD0025EE89 /* Icon-iOS7@2x.png */; };
@@ -46,9 +45,6 @@
 		6CC588CA1B5528920025EE89 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6CC588CB1B5528920025EE89 /* MBProgressHUDForSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBProgressHUDForSwiftTests.swift; sourceTree = "<group>"; };
 		6CC588D51B552B880025EE89 /* MBProgressHUD.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MBProgressHUD.swift; sourceTree = "<group>"; };
-		6CC588DD1B58B24B0025EE89 /* NSObject+PerformForSwift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+PerformForSwift.h"; sourceTree = "<group>"; };
-		6CC588DE1B58B24B0025EE89 /* NSObject+PerformForSwift.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+PerformForSwift.m"; sourceTree = "<group>"; };
-		6CC588E01B58B2FF0025EE89 /* MBProgressHUDForSwift-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MBProgressHUDForSwift-Bridging-Header.h"; sourceTree = "<group>"; };
 		6CC588E21B58FCAD0025EE89 /* 37x-Checkmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "37x-Checkmark.png"; path = "Images/37x-Checkmark.png"; sourceTree = "<group>"; };
 		6CC588E31B58FCAD0025EE89 /* 37x-Checkmark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "37x-Checkmark@2x.png"; path = "Images/37x-Checkmark@2x.png"; sourceTree = "<group>"; };
 		6CC588E41B58FCAD0025EE89 /* Icon-iOS7@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon-iOS7@2x.png"; path = "Images/Icon-iOS7@2x.png"; sourceTree = "<group>"; };
@@ -105,9 +101,6 @@
 				6CC588BE1B5528900025EE89 /* LaunchScreen.xib */,
 				6CC588B31B55288E0025EE89 /* Supporting Files */,
 				6CC588D51B552B880025EE89 /* MBProgressHUD.swift */,
-				6CC588DD1B58B24B0025EE89 /* NSObject+PerformForSwift.h */,
-				6CC588DE1B58B24B0025EE89 /* NSObject+PerformForSwift.m */,
-				6CC588E01B58B2FF0025EE89 /* MBProgressHUDForSwift-Bridging-Header.h */,
 			);
 			path = MBProgressHUDForSwift;
 			sourceTree = "<group>";
@@ -263,7 +256,6 @@
 				6CC588B81B55288F0025EE89 /* ViewController.swift in Sources */,
 				6CC588D61B552B880025EE89 /* MBProgressHUD.swift in Sources */,
 				6CC588B61B55288F0025EE89 /* AppDelegate.swift in Sources */,
-				6CC588DF1B58B24B0025EE89 /* NSObject+PerformForSwift.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -398,7 +390,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "powfulhong.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "MBProgressHUDForSwift/MBProgressHUDForSwift-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -412,7 +404,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "powfulhong.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "MBProgressHUDForSwift/MBProgressHUDForSwift-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Release;
 		};
