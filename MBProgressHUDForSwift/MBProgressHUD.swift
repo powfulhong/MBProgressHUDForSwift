@@ -213,13 +213,20 @@ class MBProgressHUD: UIView {
         useAnimation = animated
         // If the minShow time is set, calculate how long the hud was shown,
         // and pospone the hiding operation if necessary
-        if minShowTime > 0.0 && showStarted != nil {
-            let interv: NSTimeInterval = NSDate().timeIntervalSinceDate(showStarted!)
-            if interv < minShowTime {
+        if let showStarted = showStarted where minShowTime > 0.0 {
+            let interv: NSTimeInterval = NSDate().timeIntervalSinceDate(showStarted)
+            guard interv >= minShowTime else {
                 minShowTimer = NSTimer(timeInterval: minShowTime - interv, target: self, selector: "handleMinShowTimer:", userInfo: nil, repeats: false)
                 return
             }
         }
+//        if minShowTime > 0.0 && showStarted != nil {
+//            let interv: NSTimeInterval = NSDate().timeIntervalSinceDate(showStarted!)
+//            if interv < minShowTime {
+//                minShowTimer = NSTimer(timeInterval: minShowTime - interv, target: self, selector: "handleMinShowTimer:", userInfo: nil, repeats: false)
+//                return
+//            }
+//        }
         // ... otherwise hide the HUD immediately
         self.hideUsingAnimation(useAnimation)
     }
@@ -458,8 +465,8 @@ class MBProgressHUD: UIView {
     
     private func updateForCurrentOrientationAnimaged(animated: Bool) {
         // Stay in sync with the superview in any case
-        if self.superview != nil {
-            self.bounds = self.superview!.bounds
+        if let superView = self.superview {
+            self.bounds = superView.bounds
             self.setNeedsDisplay()
         }
     }
@@ -572,8 +579,8 @@ class MBProgressHUD: UIView {
         }
         
         // Set background rect color
-        if self.color != nil {
-            CGContextSetFillColorWithColor(context, self.color!.CGColor)
+        if let color = self.color {
+            CGContextSetFillColorWithColor(context, color.CGColor)
         } else {
             CGContextSetGrayFillColor(context, 0.0, CGFloat(opacity))
         }
@@ -610,15 +617,14 @@ extension MBProgressHUD {
     }
     
     class func hideHUDForView(view: UIView, animated: Bool) -> Bool {
-        let hud: MBProgressHUD? = self.HUDForView(view)
-        if hud != nil {
-            hud!.removeFromSuperViewOnHide = true
-            hud!.hide(animated)
-            
-            return true
+        guard let hud = self.HUDForView(view) else {
+            return false
         }
         
-        return false
+        hud.removeFromSuperViewOnHide = true
+        hud.hide(animated)
+        
+        return true
     }
     
     class func hideAllHUDsForView(view: UIView, animated: Bool) -> Int {
@@ -661,13 +667,13 @@ class MBRoundProgressView: UIView {
         }
     }
     
-    var progressTintColor: UIColor? {
+    var progressTintColor: UIColor {
         didSet {
             self.updateUI()
         }
     }
     
-    var backgroundTintColor: UIColor? {
+    var backgroundTintColor: UIColor {
         didSet {
             self.updateUI()
         }
@@ -684,12 +690,13 @@ class MBRoundProgressView: UIView {
     }
     
     override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.backgroundColor = UIColor.clearColor()
-        self.opaque = false
-        
         progressTintColor = UIColor(white: 1.0, alpha: 1.0)
         backgroundTintColor = UIColor(white: 1.0, alpha: 0.1)
+        
+        super.init(frame: frame)
+        
+        self.backgroundColor = UIColor.clearColor()
+        self.opaque = false
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -714,7 +721,7 @@ class MBRoundProgressView: UIView {
             let startAngle: CGFloat = -(CGFloat(M_PI) / 2)
             var endAngle: CGFloat = (2 * CGFloat(M_PI)) + startAngle
             processBackgroundPath.addArcWithCenter(center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
-            backgroundTintColor!.set()
+            backgroundTintColor.set()
             processBackgroundPath.stroke()
             
             // Draw progress
@@ -723,12 +730,12 @@ class MBRoundProgressView: UIView {
             processPath.lineWidth = lineWidth
             endAngle = CGFloat(progress) * 2 * CGFloat(M_PI) + startAngle
             processPath.addArcWithCenter(center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
-            progressTintColor!.set()
+            progressTintColor.set()
             processPath.stroke()
         } else {
             // Draw background
-            progressTintColor!.setStroke()
-            backgroundTintColor!.setFill()
+            progressTintColor.setStroke()
+            backgroundTintColor.setFill()
             CGContextSetLineWidth(context, 2.0)
             CGContextFillEllipseInRect(context, circleRect)
             CGContextStrokeEllipseInRect(context, circleRect)
@@ -738,7 +745,7 @@ class MBRoundProgressView: UIView {
             let radius: CGFloat = (allRect.size.width - 4) / 2
             let startAngle: CGFloat = -(CGFloat(M_PI) / 2)
             let endAngle: CGFloat = CGFloat(progress) * 2 * CGFloat(M_PI) + startAngle
-            progressTintColor!.setFill()
+            progressTintColor.setFill()
             CGContextMoveToPoint(context, center.x, center.y)
             CGContextAddArc(context, center.x, center.y, radius, startAngle, endAngle, 0)
             CGContextClosePath(context)
@@ -750,25 +757,25 @@ class MBRoundProgressView: UIView {
 
 // MARK: - MBBarProgressView
 class MBBarProgressView: UIView {
-    var progress: Float = 0.0 {
+    var progress: Float {
         didSet {
             self.updateUI()
         }
     }
     
-    var lineColor: UIColor? {
+    var lineColor: UIColor {
         didSet {
             self.updateUI()
         }
     }
     
-    var progressRemainingColor: UIColor? {
+    var progressRemainingColor: UIColor {
         didSet {
             self.updateUI()
         }
     }
     
-    var progressColor: UIColor? {
+    var progressColor: UIColor {
         didSet {
             self.updateUI()
         }
@@ -779,12 +786,12 @@ class MBBarProgressView: UIView {
     }
     
     override init(frame: CGRect) {
-        super.init(frame: frame)
-        
         progress = 0.0
         lineColor = UIColor.whiteColor()
         progressColor = UIColor.whiteColor()
         progressRemainingColor = UIColor.clearColor()
+        
+        super.init(frame: frame)
         
         self.backgroundColor = UIColor.clearColor()
         self.opaque = false
@@ -798,8 +805,8 @@ class MBBarProgressView: UIView {
         let context: CGContextRef = UIGraphicsGetCurrentContext()!
         
         CGContextSetLineWidth(context, 2)
-        CGContextSetStrokeColorWithColor(context, lineColor!.CGColor)
-        CGContextSetFillColorWithColor(context, progressRemainingColor!.CGColor)
+        CGContextSetStrokeColorWithColor(context, lineColor.CGColor)
+        CGContextSetFillColorWithColor(context, progressRemainingColor.CGColor)
         
         // Draw background
         var radius: CGFloat = (rect.size.height / 2) - 2
@@ -822,7 +829,7 @@ class MBBarProgressView: UIView {
         CGContextAddArcToPoint(context, 2, rect.size.height - 2, 2, rect.size.height / 2, radius)
         CGContextStrokePath(context)
         
-        CGContextSetFillColorWithColor(context, progressColor!.CGColor)
+        CGContextSetFillColorWithColor(context, progressColor.CGColor)
         radius = radius - 2
         let amount: CGFloat = CGFloat(progress) * rect.size.width
         
