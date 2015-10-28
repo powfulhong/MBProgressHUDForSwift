@@ -70,8 +70,8 @@ func MB_MULTILINE_TEXTSIZE(text: String?, font: UIFont, maxSize: CGSize, mode: N
 class MBProgressHUD: UIView {
     private var useAnimation: Bool = true
     private var closureForExecution: MBProgressHUDExecutionClosures?
-    private var label: UILabel?
-    private var detailsLabel: UILabel?
+    private var label: UILabel!
+    private var detailsLabel: UILabel!
     private var rotationTransform: CGAffineTransform = CGAffineTransformIdentity
     
     private var indicator: UIView?
@@ -95,13 +95,13 @@ class MBProgressHUD: UIView {
     }
     var labelText: String? {
         didSet {
-            label!.text = labelText
+            label.text = labelText
             self.updateUI()
         }
     }
     var detailsLabelText: String? {
         didSet {
-            detailsLabel!.text = detailsLabelText
+            detailsLabel.text = detailsLabelText
             self.updateUI()
         }
     }
@@ -109,25 +109,25 @@ class MBProgressHUD: UIView {
     var color: UIColor?
     var labelFont = UIFont.boldSystemFontOfSize(kLabelFontSize) {
         didSet {
-            label!.font = labelFont
+            label.font = labelFont
             self.updateUI()
         }
     }
     var labelColor = UIColor.whiteColor() {
         didSet {
-            label!.textColor = labelColor
+            label.textColor = labelColor
             self.updateUI()
         }
     }
     var detailsLabelFont = UIFont.boldSystemFontOfSize(kDetailsLabelFontSize) {
         didSet {
-            detailsLabel!.font = detailsLabelFont
+            detailsLabel.font = detailsLabelFont
             self.updateUI()
         }
     }
     var detailsLabelColor = UIColor.whiteColor() {
         didSet {
-            detailsLabel!.textColor = detailsLabelColor
+            detailsLabel.textColor = detailsLabelColor
             self.updateUI()
         }
     }
@@ -384,26 +384,26 @@ class MBProgressHUD: UIView {
     // MARK: - UI
     private func setupLabels() {
         label = UILabel(frame: self.bounds)
-        label!.adjustsFontSizeToFitWidth = false
-        label!.textAlignment = NSTextAlignment.Center
-        label!.opaque = false
-        label!.backgroundColor = UIColor.clearColor()
-        label!.textColor = labelColor
-        label!.font = labelFont
-        label!.text = labelText
-        self.addSubview(label!)
+        label.adjustsFontSizeToFitWidth = false
+        label.textAlignment = NSTextAlignment.Center
+        label.opaque = false
+        label.backgroundColor = UIColor.clearColor()
+        label.textColor = labelColor
+        label.font = labelFont
+        label.text = labelText
+        self.addSubview(label)
         
         detailsLabel = UILabel(frame: self.bounds)
-        detailsLabel!.font = detailsLabelFont
-        detailsLabel!.adjustsFontSizeToFitWidth = false
-        detailsLabel!.textAlignment = NSTextAlignment.Center
-        detailsLabel!.opaque = false
-        detailsLabel!.backgroundColor = UIColor.clearColor()
-        detailsLabel!.textColor = detailsLabelColor
-        detailsLabel!.numberOfLines = 0
-        detailsLabel!.font = detailsLabelFont
-        detailsLabel!.text = detailsLabelText
-        self.addSubview(detailsLabel!)
+        detailsLabel.font = detailsLabelFont
+        detailsLabel.adjustsFontSizeToFitWidth = false
+        detailsLabel.textAlignment = NSTextAlignment.Center
+        detailsLabel.opaque = false
+        detailsLabel.backgroundColor = UIColor.clearColor()
+        detailsLabel.textColor = detailsLabelColor
+        detailsLabel.numberOfLines = 0
+        detailsLabel.font = detailsLabelFont
+        detailsLabel.text = detailsLabelText
+        self.addSubview(detailsLabel)
     }
     
     private func updateIndicators() {
@@ -491,7 +491,7 @@ class MBProgressHUD: UIView {
         totalSize.width = max(totalSize.width, indicatorF.size.width)
         totalSize.height += indicatorF.size.height
         
-        var labelSize: CGSize = MB_TEXTSIZE(label!.text, font: label!.font)
+        var labelSize: CGSize = MB_TEXTSIZE(label.text, font: label.font)
         labelSize.width = min(labelSize.width, maxWidth)
         totalSize.width = max(totalSize.width, labelSize.width)
         totalSize.height += labelSize.height
@@ -501,7 +501,7 @@ class MBProgressHUD: UIView {
         
         let remainingHeight: CGFloat = bounds.size.height - totalSize.height - kPadding - 4 * CGFloat(margin)
         let maxSize: CGSize = CGSizeMake(maxWidth, remainingHeight)
-        let detailsLabelSize: CGSize = MB_MULTILINE_TEXTSIZE(detailsLabel!.text, font: detailsLabel!.font, maxSize: maxSize, mode: detailsLabel!.lineBreakMode)
+        let detailsLabelSize: CGSize = MB_MULTILINE_TEXTSIZE(detailsLabel.text, font: detailsLabel.font, maxSize: maxSize, mode: detailsLabel.lineBreakMode)
         totalSize.width = max(totalSize.width, detailsLabelSize.width)
         totalSize.height += detailsLabelSize.height
         if detailsLabelSize.height > 0.0 && (indicatorF.size.height > 0.0 || labelSize.height > 0.0) {
@@ -526,7 +526,7 @@ class MBProgressHUD: UIView {
         labelF.origin.y = yPos
         labelF.origin.x = round((bounds.size.width - labelSize.width) / 2) + xPos
         labelF.size = labelSize
-        label!.frame = labelF
+        label.frame = labelF
         yPos += labelF.size.height
         
         if detailsLabelSize.height > 0.0 && (indicatorF.size.height > 0.0 || labelSize.height > 0.0) {
@@ -536,7 +536,7 @@ class MBProgressHUD: UIView {
         detailsLabelF.origin.y = yPos
         detailsLabelF.origin.x = round((bounds.size.width - detailsLabelSize.width) / 2) + xPos
         detailsLabelF.size = detailsLabelSize
-        detailsLabel!.frame = detailsLabelF
+        detailsLabel.frame = detailsLabelF
         
         // Enforce minsize and quare rules
         if square {
