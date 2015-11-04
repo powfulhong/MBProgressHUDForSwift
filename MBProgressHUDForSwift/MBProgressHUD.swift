@@ -180,7 +180,7 @@ class MBProgressHUD: UIView {
         
         self.init(frame: view!.bounds)
     }
-    
+
     convenience init(window: UIWindow) {
         self.init(view: window)
     }
@@ -407,45 +407,97 @@ class MBProgressHUD: UIView {
     }
     
     private func updateIndicators() {
-        let isActivityIndicator: Bool = indicator is UIActivityIndicatorView
-        let isRoundIndicator: Bool = indicator is MBRoundProgressView
-        let isIndeterminatedRoundIndicator: Bool = indicator is MBIndeterminatedRoundProgressView
+        let isActivityIndicator: Bool = self.indicator is UIActivityIndicatorView
+        let isRoundIndicator: Bool = self.indicator is MBRoundProgressView
+        let isIndeterminatedRoundIndicator: Bool = self.indicator is MBIndeterminatedRoundProgressView
         
-        if mode == MBProgressHUDMode.Indeterminate {
+        switch self.mode {
+        case .Indeterminate:
+            let activityIndicator = isActivityIndicator ? (self.indicator as! UIActivityIndicatorView) : UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
+            
             if !isActivityIndicator {
-                indicator?.removeFromSuperview()
-                indicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
-                (indicator as! UIActivityIndicatorView).startAnimating()
-                self.addSubview(indicator!)
+                self.indicator?.removeFromSuperview()
+                self.indicator = activityIndicator
+                
+                activityIndicator.startAnimating()
+                self.addSubview(activityIndicator)
             }
-            (indicator as! UIActivityIndicatorView).color = activityIndicatorColor
-        } else if mode == MBProgressHUDMode.AnnularIndeterminate {
+            activityIndicator.color = activityIndicatorColor
+            
+        case .AnnularIndeterminate:
             if !isIndeterminatedRoundIndicator {
-                indicator?.removeFromSuperview()
-                indicator = MBIndeterminatedRoundProgressView()
-                self.addSubview(indicator!)
+                self.indicator?.removeFromSuperview()
+                self.indicator = MBIndeterminatedRoundProgressView()
+                self.addSubview(self.indicator!)
             }
-        } else if mode == MBProgressHUDMode.DeterminateHorizontalBar {
-            indicator?.removeFromSuperview()
-            indicator = MBBarProgressView()
-            self.addSubview(indicator!)
-        } else if mode == MBProgressHUDMode.Determinate || mode == MBProgressHUDMode.AnnularDeterminate {
+            
+        case .DeterminateHorizontalBar:
+            self.indicator?.removeFromSuperview()
+            self.indicator = MBBarProgressView()
+            self.addSubview(self.indicator!)
+            
+        case .Determinate:
+            fallthrough
+            
+        case .AnnularDeterminate:
             if !isRoundIndicator {
-                indicator?.removeFromSuperview()
-                indicator = MBRoundProgressView()
-                self.addSubview(indicator!)
+                self.indicator?.removeFromSuperview()
+                self.indicator = MBRoundProgressView()
+                self.addSubview(self.indicator!)
             }
-            if mode == MBProgressHUDMode.AnnularDeterminate {
-                (indicator as! MBRoundProgressView).annular = true
+            
+            if self.mode == MBProgressHUDMode.AnnularDeterminate {
+                (self.indicator as! MBRoundProgressView).annular = true
             }
-        } else if mode == MBProgressHUDMode.CustomView && customView != indicator {
-            indicator?.removeFromSuperview()
-            self.indicator = customView
-            self.addSubview(indicator!)
-        } else if mode == MBProgressHUDMode.Text {
-            indicator?.removeFromSuperview()
-            indicator = nil
+            
+        case .CustomView where self.customView != self.indicator:
+            self.indicator?.removeFromSuperview()
+            self.indicator = self.customView
+            self.addSubview(self.indicator!)
+            
+        case .Text:
+            self.indicator?.removeFromSuperview()
+            self.indicator = nil
+            
+        default:
+            break
         }
+        
+//        if mode == MBProgressHUDMode.Indeterminate {
+//            if !isActivityIndicator {
+//                indicator?.removeFromSuperview()
+//                indicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
+//                (indicator as! UIActivityIndicatorView).startAnimating()
+//                self.addSubview(indicator!)
+//            }
+//            (indicator as! UIActivityIndicatorView).color = activityIndicatorColor
+//        } else if mode == MBProgressHUDMode.AnnularIndeterminate {
+//            if !isIndeterminatedRoundIndicator {
+//                indicator?.removeFromSuperview()
+//                indicator = MBIndeterminatedRoundProgressView()
+//                self.addSubview(indicator!)
+//            }
+//        } else if mode == MBProgressHUDMode.DeterminateHorizontalBar {
+//            indicator?.removeFromSuperview()
+//            indicator = MBBarProgressView()
+//            self.addSubview(indicator!)
+//        } else if mode == MBProgressHUDMode.Determinate || mode == MBProgressHUDMode.AnnularDeterminate {
+//            if !isRoundIndicator {
+//                indicator?.removeFromSuperview()
+//                indicator = MBRoundProgressView()
+//                self.addSubview(indicator!)
+//            }
+//            if mode == MBProgressHUDMode.AnnularDeterminate {
+//                (indicator as! MBRoundProgressView).annular = true
+//            }
+//        } else if mode == MBProgressHUDMode.CustomView && customView != indicator {
+//            indicator?.removeFromSuperview()
+//            self.indicator = customView
+//            self.addSubview(indicator!)
+//        } else if mode == MBProgressHUDMode.Text {
+//            indicator?.removeFromSuperview()
+//            indicator = nil
+//        }
     }
     
     // MARK: - Notificaiton
