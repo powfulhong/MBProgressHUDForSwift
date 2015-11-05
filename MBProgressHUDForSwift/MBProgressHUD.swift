@@ -6,6 +6,7 @@
 //  Copyright (c) 2015年 powfulhong. All rights reserved.
 //
 
+import Foundation
 import UIKit
 import Dispatch
 
@@ -55,7 +56,7 @@ func MB_TEXTSIZE(text: String?, font: UIFont) -> CGSize {
         return CGSizeZero
     }
     
-    return (textTemp as NSString).sizeWithAttributes([NSFontAttributeName: font])
+    return textTemp.sizeWithAttributes([NSFontAttributeName: font])
 }
 
 func MB_MULTILINE_TEXTSIZE(text: String?, font: UIFont, maxSize: CGSize, mode: NSLineBreakMode) -> CGSize {
@@ -63,7 +64,7 @@ func MB_MULTILINE_TEXTSIZE(text: String?, font: UIFont, maxSize: CGSize, mode: N
         return CGSizeZero
     }
     
-    return (textTemp as NSString).boundingRectWithSize(maxSize, options: NSStringDrawingOptions.UsesLineFragmentOrigin, attributes: [NSFontAttributeName: font], context: nil).size
+    return textTemp.boundingRectWithSize(maxSize, options: NSStringDrawingOptions.UsesLineFragmentOrigin, attributes: [NSFontAttributeName: font], context: nil).size
 }
 
 //MARK: - MBProgressHUD
